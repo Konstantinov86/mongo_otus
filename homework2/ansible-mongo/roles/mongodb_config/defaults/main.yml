@@ -1,0 +1,18 @@
+---
+# defaults file for mongodb_config
+pid_file: /var/run/mongodb/mongod.pid
+bind_ip: 0.0.0.0
+bind_ip_all: false
+# config_port is in vars to facilitate molecule tests
+config_repl_set_name: cfg
+mongod_package: "mongodb-org-server"
+replicaset: false
+net_compressors: null
+mongod_config_template: "configsrv.conf.j2"
+skip_restart: true
+db_path: "{{ '/var/lib/mongodb' if ansible_os_family == 'Debian' else '/var/lib/mongo' if ansible_os_family == 'RedHat' else '/var/lib/mongo' }}"
+config_port: 27019
+mongodb_user: "mongodb"
+mongodb_group: "mongodb"
+mongod_service: "mongod"
+authorization: enabled
