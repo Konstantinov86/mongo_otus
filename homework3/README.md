@@ -5,7 +5,7 @@
 ## В процессе сделано:
 
 - Используем terraform и ansible из дз2 для развертывания инстанса mongo;
-- Скачивааем dataset  stocks  и  развертываем в инстансе c помощью mongorestore:
+- Скачиваем dataset  stocks  и  развертываем в инстансе c помощью mongorestore:
 
 ```
 mongorestore dump --port 27019 -u mongo -p password
