@@ -1,0 +1,12 @@
+---
+- hosts: mongo_shard_instances
+  remote_user: ubuntu
+  become: yes 
+  vars:
+    repl_set_name: shard1
+    sharding: true
+  
+  roles:
+    - mongodb_mongod
+
+

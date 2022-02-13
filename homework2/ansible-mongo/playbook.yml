@@ -10,3 +10,5 @@
     - mongodb_selinux
     - mongodb_config
 
+---
+hosts: all

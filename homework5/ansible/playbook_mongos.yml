@@ -1,0 +1,11 @@
+---
+- hosts: mongos_instances
+  remote_user: ubuntu
+  become: yes 
+  vars:
+    config_repl_set_name: cfg
+    config_servers: "34.124.248.59:27019"
+  roles:
+    - mongodb_mongos
+
+

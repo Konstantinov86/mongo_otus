@@ -1,0 +1,12 @@
+---
+- hosts: all
+  remote_user: ubuntu
+  become: yes 
+
+  roles:
+    - mongodb_linux
+    - mongodb_repository
+    - mongodb_install
+    - mongodb_selinux
+    - mongodb_auth
+

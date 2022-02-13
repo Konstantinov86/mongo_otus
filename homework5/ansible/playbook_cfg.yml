@@ -1,0 +1,9 @@
+---
+- hosts: mongo_cfg_instances
+  remote_user: ubuntu
+  become: yes 
+
+  roles:
+    - mongodb_config
+
+
