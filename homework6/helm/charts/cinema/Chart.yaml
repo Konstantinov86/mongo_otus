@@ -1,0 +1,20 @@
+apiVersion: v2
+name: cinema
+description: A Helm chart to deploy Cinema project in Kubernetes
+# chart type
+type: application
+# chart version
+version: 0.2.1
+# cinema app version
+appVersion: "v2.1.2"
+dependencies:
+  - name: users
+    version: 0.x.x
+  - name: movies
+    version: 0.x.x
+  - name: showtimes
+    version: 0.x.x
+  - name: bookings
+    version: 0.x.x
+  - name: website
+    version: 0.x.x

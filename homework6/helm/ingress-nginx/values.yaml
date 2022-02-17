@@ -1,0 +1,95 @@
+controller:
+  config:
+    log-format-escape-json: "true"
+    log-format-upstream: '{"timestamp": "$time_iso8601", "requestID": "$req_id", "proxyUpstreamName":
+    "$proxy_upstream_name", "proxyAlternativeUpstreamName": "$proxy_alternative_upstream_name","upstreamStatus":
+    "$upstream_status", "upstreamAddr": "$upstream_addr","httpRequest":{"requestMethod":
+    "$request_method", "requestUrl": "$host$request_uri", "status": $status,"requestSize":
+    "$request_length", "responseSize": "$upstream_response_length", "userAgent": "$http_user_agent",
+    "remoteIp": "$remote_addr", "referer": "$http_referer", "latency": "$upstream_response_time s",
+    "protocol":"$server_protocol"}}'
+  replicaCount: 3
+
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - ingress-nginx
+          topologyKey: kubernetes.io/hostname
+
+  metrics:
+    port: 10254
+    # if this port is changed, change healthz-port: in extraArgs: accordingly
+    enabled: true
+
+    service:
+      annotations: 
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "10254"
+
+      # clusterIP: ""
+
+      ## List of IP addresses at which the stats-exporter service is available
+      ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+      ##
+      externalIPs: []
+
+      # loadBalancerIP: ""
+      loadBalancerSourceRanges: []
+      servicePort: 10254
+      type: ClusterIP
+      # externalTrafficPolicy: ""
+      # nodePort: ""
+
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        prometheus: ingress-nginx
+        release: prometheus
+
+
+    prometheusRule:
+      enabled: false
+      additionalLabels:
+        prometheus: ingress-nginx
+      # namespace: ""
+      rules: []
+        # # These are just examples rules, please adapt them to your needs
+        # - alert: NGINXConfigFailed
+        #   expr: count(nginx_ingress_controller_config_last_reload_successful == 0) > 0
+        #   for: 1s
+        #   labels:
+        #     severity: critical
+        #   annotations:
+        #     description: bad ingress config - nginx config test failed
+        #     summary: uninstall the latest ingress changes to allow config reloads to resume
+        # - alert: NGINXCertificateExpiry
+        #   expr: (avg(nginx_ingress_controller_ssl_expire_time_seconds) by (host) - time()) < 604800
+        #   for: 1s
+        #   labels:
+        #     severity: critical
+        #   annotations:
+        #     description: ssl certificate(s) will expire in less then a week
+        #     summary: renew expiring certificates to avoid downtime
+        # - alert: NGINXTooMany500s
+        #   expr: 100 * ( sum( nginx_ingress_controller_requests{status=~"5.+"} ) / sum(nginx_ingress_controller_requests) ) > 5
+        #   for: 1m
+        #   labels:
+        #     severity: warning
+        #   annotations:
+        #     description: Too many 5XXs
+        #     summary: More than 5% of all requests returned 5XX, this requires your attention
+        # - alert: NGINXTooMany400s
+        #   expr: 100 * ( sum( nginx_ingress_controller_requests{status=~"4.+"} ) / sum(nginx_ingress_controller_requests) ) > 5
+        #   for: 1m
+        #   labels:
+        #     severity: warning
+        #   annotations:
+        #     description: Too many 4XXs
+        #     summary: More than 5% of all requests returned 4XX, this requires your attention
