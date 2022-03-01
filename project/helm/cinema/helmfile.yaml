@@ -1,0 +1,141 @@
+helmDefaults:
+  
+  verify: false
+  # wait for k8s resources via --wait. (default false)
+  wait: true
+ # time in seconds to wait for any individual Kubernetes operation (like Jobs for hooks, and waits on pod/pvc/svc/deployment readiness) (default 300)
+  timeout: 600
+  # performs pods restart for the resource if applicable (default false)
+  historyMax: 10
+  
+
+commonLabels: {}
+
+
+releases:
+  - name: website
+    namespace: cinema
+    chart: charts/website
+    values:
+      - ingress:
+          enabled: true
+          annotations: 
+            kubernetes.io/ingress.class: nginx
+            kubernetes.io/tls-acme: "true"
+            cert-manager.io/cluster-issuer: "letsencrypt"
+            cert-manager.io/acme-challenge-type: http01
+          hosts:
+          - host: cinema.{{requiredEnv "nginx_ingress_ip"}}.nip.io
+            paths:
+              - path: /
+          tls: 
+          - secretName: letsencrypt-cinema
+            hosts: 
+              - cinema.{{requiredEnv "nginx_ingress_ip"}}.nip.io
+
+      - args:
+        - "-usersAPI"
+        - "http://users/api/users/"
+        - "-moviesAPI"
+        - "http://movies/api/movies/"
+        - "-showtimesAPI"
+        - "http://showtimes/api/showtimes/"
+        - "-bookingsAPI"
+        - "http://bookings/api/bookings/"
+  
+  - name: bookings
+    namespace: cinema
+    chart: charts/bookings
+    values:
+      - args:
+         - "-mongoURI"
+         - "mongodb://cinema:cinema1@mongodb-headless.mongo.svc.cluster.local:27017/"
+      - ingress:
+          enabled: true
+          annotations: 
+            kubernetes.io/ingress.class: nginx
+            kubernetes.io/tls-acme: "true"
+            cert-manager.io/cluster-issuer: "letsencrypt"
+            cert-manager.io/acme-challenge-type: http01
+            nginx.ingress.kubernetes.io/rewrite-target: /$3
+          hosts:
+          - host: cinema.{{requiredEnv "nginx_ingress_ip"}}.nip.io
+            paths:
+              - path: /api/bookings(/|$)(.*)
+          tls: 
+          - secretName: letsencrypt-cinema
+            hosts: 
+              - cinema.{{requiredEnv "nginx_ingress_ip"}}.nip.io
+       
+  
+  - name: movies
+    namespace: cinema
+    chart: charts/movies
+    values:
+      - args:
+         - "-mongoURI"
+         - "mongodb://cinema:cinema1@mongodb-headless.mongo.svc.cluster.local:27017/"
+      - ingress:
+          enabled: true
+          annotations: 
+            kubernetes.io/ingress.class: nginx
+            kubernetes.io/tls-acme: "true"
+            cert-manager.io/cluster-issuer: "letsencrypt"
+            cert-manager.io/acme-challenge-type: http01
+          hosts:
+          - host: cinema.{{requiredEnv "nginx_ingress_ip"}}.nip.io
+            paths:
+              - path: /api/movies
+          tls: 
+          - secretName: letsencrypt-cinema
+            hosts: 
+              - cinema.{{requiredEnv "nginx_ingress_ip"}}.nip.io
+
+  - name: showtimes
+    namespace: cinema
+    chart: charts/showtimes
+    values:
+      - args:
+         - "-mongoURI"
+         - "mongodb://cinema:cinema1@mongodb-headless.mongo.svc.cluster.local:27017/"
+      - ingress:
+          enabled: true
+          annotations: 
+            kubernetes.io/ingress.class: nginx
+            kubernetes.io/tls-acme: "true"
+            cert-manager.io/cluster-issuer: "letsencrypt"
+            cert-manager.io/acme-challenge-type: http01
+          hosts:
+          - host: cinema.{{requiredEnv "nginx_ingress_ip"}}.nip.io
+            paths:
+              - path: /api/showtimes
+          tls: 
+          - secretName: letsencrypt-cinema
+            hosts: 
+              - cinema.{{requiredEnv "nginx_ingress_ip"}}.nip.io
+  
+  - name: users
+    namespace: cinema
+    chart: charts/users
+    values:
+      - args:
+         - "-mongoURI"
+         - "mongodb://cinema:cinema1@mongodb-headless.mongo.svc.cluster.local:27017/"
+      - ingress:
+          enabled: true
+          annotations: 
+            kubernetes.io/ingress.class: nginx
+            kubernetes.io/tls-acme: "true"
+            cert-manager.io/cluster-issuer: "letsencrypt"
+            cert-manager.io/acme-challenge-type: http01
+          hosts:
+          - host: cinema.{{requiredEnv "nginx_ingress_ip"}}.nip.io
+            paths:
+              - path: /api/users
+          tls: 
+          - secretName: letsencrypt-cinema
+            hosts: 
+              - cinema.{{requiredEnv "nginx_ingress_ip"}}.nip.io
+
+
+  
