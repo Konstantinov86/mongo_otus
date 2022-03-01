@@ -44,6 +44,7 @@ export nginx_ingress_ip=$(kubectl get svc --namespace=ingress-nginx ingress-ngin
 ### Используется  helm/cinema/helmfile.yaml apply  для  развертывания бизнес модулей :
 1) развертываются 5 deployment;
 2) создается ingress для сервисов front и api (адрес берется из переменной nginx_ingress_ip):
+
 website - https://cinema.34.88.90.174.nip.io;
 
 bookings - https://cinema.34.88.90.174.nip.io/api/bookings;
